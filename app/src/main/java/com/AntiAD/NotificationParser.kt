@@ -9,52 +9,13 @@ data class AppNotificationInfo(
 
 class NotificationParser(val appNotification: AppNotificationInfo) {
     var lastLogEntry: LogEntry? = null
-    private var matchedText: String = ""
 
     fun isAd(): Boolean {
         val title = appNotification.notification.extras?.get("android.title")?.toString() ?: ""
         val text = appNotification.notification.extras?.get("android.text")?.toString() ?: ""
         val subText = appNotification.notification.extras?.get("android.subText")?.toString() ?: ""
-
-        var isAd = false
-
-        if (title.isNotEmpty()) {
-            for (adString in getAdKeywords()) {
-                if (title == adString) {
-                    matchedText = adString
-                    isAd = true
-                    break
-                }
-            }
-        }
-
-        if (!isAd) {
-            val subTextStr = subText
-            if (subTextStr.contains("Advertisement") || subTextStr == "Advertisement") {
-                matchedText = subTextStr
-                isAd = true
-            }
-        }
-
-        if (!isAd) {
-            val textStr = text
-            if (textStr.contains("Advertisement") || textStr == "Advertisement") {
-                matchedText = textStr
-                isAd = true
-            }
-        }
-
-        if (!isAd) {
-            listOf(subText, title, text).forEach { field ->
-                if (field != "null" && field.isNotEmpty() && !isAd) {
-                    val matches = getAdKeywords().filter { field.contains(it, ignoreCase = true) }
-                    if (matches.isNotEmpty()) {
-                        matchedText = field
-                        isAd = true
-                    }
-                }
-            }
-        }
+        val matchedText = findAdMatch(title, text, subText) ?: ""
+        val isAd = matchedText.isNotEmpty()
 
         lastLogEntry = LogEntry(
             appName = appNotification.packageName,
@@ -70,35 +31,49 @@ class NotificationParser(val appNotification: AppNotificationInfo) {
     }
 
     fun getAdKeywords(): List<String> {
-        return listOf(
-            "Advertisement",
-            "Advertensie",
-            "Werbung",
-            "Publicité",
-            "Pubblicità",
-            "広告",
-            "广告",
-            "廣告",
-            "광고",
-            "Реклама",
-            "Anuncio",
-            "Anúncio",
-            "Mainos",
-            "Reklama",
-            "Reklam",
-            "Annonse",
-            "Iklan",
-            "Διαφήμιση",
-            "Advertentie",
-            "Reklame",
-            "Oglas",
-            "Auglýsing",
-            "إعلان",
-            "إشهار",
-            "विज्ञापन",
-            "पब्लिसिटी",
-            "오디오 광고",
-            "Quảng cáo"
-        )
+        return AD_KEYWORDS
     }
 }
+
+internal fun findAdMatch(title: String, text: String, subText: String): String? {
+    val exactTitleMatch = AD_KEYWORDS.firstOrNull { title.isNotEmpty() && title == it }
+    if (exactTitleMatch != null) return exactTitleMatch
+    if (subText.contains("Advertisement")) return subText
+    if (text.contains("Advertisement")) return text
+
+    return listOf(subText, title, text).firstOrNull { field ->
+        field != "null" && field.isNotEmpty() &&
+            AD_KEYWORDS.any { field.contains(it, ignoreCase = true) }
+    }
+}
+
+private val AD_KEYWORDS = listOf(
+    "Advertisement",
+    "Advertensie",
+    "Werbung",
+    "Publicité",
+    "Pubblicità",
+    "広告",
+    "广告",
+    "廣告",
+    "광고",
+    "Реклама",
+    "Anuncio",
+    "Anúncio",
+    "Mainos",
+    "Reklama",
+    "Reklam",
+    "Annonse",
+    "Iklan",
+    "Διαφήμιση",
+    "Advertentie",
+    "Reklame",
+    "Oglas",
+    "Auglýsing",
+    "إعلان",
+    "إشهار",
+    "विज्ञापन",
+    "पब्लिसिटी",
+    "오디오 광고",
+    "Quảng cáo"
+)
