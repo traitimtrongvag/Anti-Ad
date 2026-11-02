@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Anti-Ad</string>
+    <string name="notification_listener_name" translatable="false">Anti-Ad</string>
+    <string name="notification_listener_settings_intent" translatable="false">android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS</string>
+    <string name="spotify_package_name" translatable="false">com.spotify.music</string>
+    <string name="grant_permission_text_view">App works by using Notification access to detect Spotify ads</string>
+    <string name="grant_notification_posting_permission_text_view">Android 13 and above requires notification posting permission</string>
+    <string name="grant_permission_button">Grant Permission</string>
+    <string name="grant_notification_posting_permission_button">Grant Notification Posting Permission</string>
+    <string name="permission_granted">ALREADY GRANTED</string>
+    <string name="granted">GRANTED</string>
+    <string name="app_status">Enable (interrupt Spotify ads)</string>
+    <string name="app_status_permission_not_granted">Enable (Grant Permission first)</string>
+    <string name="about">about</string>
+    <string name="about_window_text">"Anti-Ad" interrupts Spotify advertisements by force-stopping Spotify when an ad is detected, then relaunching and resuming playback. It works by utilizing notifications posted by Spotify. Only notifications from Spotify are accessed for identification and discarded immediately.         <![CDATA[This app is OpenSource.]]>
+        <![CDATA[<br/><br/>]]>
+        <![CDATA[<b>
+        Designed to be minimal &amp; lightweight, ~150KB.</b>]]>
+        <![CDATA[<br/><br/>]]>
+        <![CDATA[<b>
+        If you face issues or want a new feature, kindly open an issue on GitHub.</b>]]>
+        <![CDATA[<br/><br/>]]>
+        <![CDATA[<b>
+        SECURITY WARNING: Only install from trusted sources. Bad actors can modify the code from other sources to read your notifications. If you got this from elsewhere, uninstall it immediately!</b>]]>
+    </string>
+    <string name="github">GitHub</string>
+    <string name="report_issue">report issue</string>
+    <string name="github_link" translatable="false">https://github.com/aghontpi/ad-interrupt</string>
+    <string name="github_issues_link" translatable="false">https://github.com/aghontpi/ad-interrupt/issues/new</string>
+    <string name="notifications_optional">Notification updates (optional)</string>
+    <string name="close">Close</string>
+    <string name="stop">Stop</string>
+    <string name="disable_battery_optimization">Background Usage</string>
+    <string name="battery_restricted">Restricted</string>
+    <string name="battery_unrestricted">Unrestricted</string>
+    <string name="background_usage_dialog_title">Allow Background Usage</string>
+    <string name="background_usage_dialog_message">To ensure Anti-Ad works reliably in the background, please select \'Unrestricted\' or \'Don\'t optimize\' in the following battery settings screen.</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="cancel">CANCEL</string>
+    <string name="save">SAVE</string>
+    <string name="notification_access">Notification Access</string>
+    <string name="ad_muting_status">Anti-Ad Status</string>
+    <string name="enable_anti_ad">Enable Anti-Ad</string>
+    <string name="debug_log">Log</string>
+    <string name="clear">Clear</string>
+    <string name="channel_name">Service Status</string>
+    <string name="channel_description">Persistent notification showing that Anti-Ad is active</string>
+    <string name="notification_update_help">If detection or interrupt is not working, try enabling this.</string>
+    <string name="settings">Settings</string>
+    <string name="spotify" translatable="false">Spotify</string>
+    <string name="not_installed">(not installed)</string>
+    <string name="help">(help)</string>
+    <string name="cant_grant_permission_see_help_here">Cant grant permission? Android introduced restrictions on Android 13 and above.</string>
+
+    <!-- Shizuku Strings -->
+    <string name="shizuku_running">Shizuku: Running</string>
+    <string name="shizuku_not_running">Shizuku: Not Running (Tap for help)</string>
+    <string name="shizuku_not_available">Shizuku: Not Available</string>
+    <string name="shizuku_dialog_title">Shizuku Required</string>
+    <string name="shizuku_dialog_message">Anti-Ad uses Shizuku to force-stop Spotify when an ad is detected. This is required for the interrupt flow. Please install Shizuku from the official website and grant authorization.</string>
+    <string name="shizuku_open_website">Open Shizuku Website</string>
+    <string name="shizuku_close">Close</string>
+    <string name="shizuku_setting_title">Shizuku Integration</string>
+    <string name="shizuku_setting_desc">Use Shizuku to force-stop Spotify when an ad is detected</string>
+
+    <!-- Delay Settings -->
+    <string name="delay_setting_title">Force-Stop Delay</string>
+    <string name="delay_setting_desc">Seconds to wait before force-stopping Spotify</string>
+
+    <!-- Status strings -->
+    <string name="status_listening">Listening for Spotify ads</string>
+    <string name="status_ad_detected">Advertisement detected!</string>
+    <string name="status_interrupting">Interrupting Spotify…</string>
+    <string name="status_launching">Launching Spotify…</string>
+    <string name="status_resuming">Resuming playback…</string>
+    <string name="status_error">Error occurred</string>
+    <string name="status_disabled">Disabled</string>
+</resources>
