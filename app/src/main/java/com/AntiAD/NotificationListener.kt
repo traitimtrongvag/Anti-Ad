@@ -23,6 +23,10 @@ class NotificationListener : NotificationListenerService() {
     private var unmuteRunnable: Runnable? = null
     private var rebindRequested = false
     private var listenerConnected = false
+    private val rebindRetryRunnable = Runnable {
+        rebindRequested = false
+        requestListenerRebind()
+    }
 
     private enum class InterruptState {
         IDLE,
@@ -276,10 +280,14 @@ class NotificationListener : NotificationListenerService() {
             rebindRequested = false
             Log.e(TAG, "requestRebind failed", e)
         }
+        if (!listenerConnected) {
+            handler.postDelayed(rebindRetryRunnable, REBIND_RETRY_DELAY_MS)
+        }
     }
 
     private fun resetProcessingState(state: InterruptState) {
         handler.removeCallbacksAndMessages(null)
+        rebindRequested = false
         unmuteRunnable = null
         unmute()
         isProcessingAd = false
@@ -464,6 +472,7 @@ class NotificationListener : NotificationListenerService() {
 
     companion object {
         const val SPOTIFY_PACKAGE = "com.spotify.music"
+        private const val REBIND_RETRY_DELAY_MS = 30_000L
         @Volatile var startTime: Long = 0
         @Volatile var instance: NotificationListener? = null
     }
