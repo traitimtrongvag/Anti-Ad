@@ -122,24 +122,8 @@ object SpotifyController {
                 val playbackState = mediaController.playbackState
                 val metadata = mediaController.metadata
                 if (playbackState != null) {
-                    when (playbackState.state) {
-                        PlaybackState.STATE_PLAYING -> {
-                            // Check if the metadata title suggests an ad
-                            val title = metadata?.getString(android.media.MediaMetadata.METADATA_KEY_TITLE) ?: ""
-                            if (isAdTitle(title)) {
-                                State.PLAYING_AD
-                            } else {
-                                State.PLAYING_MUSIC
-                            }
-                        }
-                        PlaybackState.STATE_PAUSED -> State.PAUSED
-                        PlaybackState.STATE_STOPPED -> State.STOPPED
-                        PlaybackState.STATE_BUFFERING -> {
-                            // Could be loading an ad or track
-                            State.PLAYING_MUSIC
-                        }
-                        else -> State.UNKNOWN
-                    }
+                    val title = metadata?.getString(android.media.MediaMetadata.METADATA_KEY_TITLE) ?: ""
+                    classifyPlaybackState(playbackState.state, title)
                 } else {
                     State.UNKNOWN
                 }
@@ -149,6 +133,17 @@ object SpotifyController {
         } catch (e: Exception) {
             Log.e(TAG, "Error getting playback state", e)
             State.UNKNOWN
+        }
+    }
+
+    internal fun classifyPlaybackState(state: Int, title: String): State {
+        return when (state) {
+            PlaybackState.STATE_PLAYING -> {
+                if (isAdTitle(title)) State.PLAYING_AD else State.PLAYING_MUSIC
+            }
+            PlaybackState.STATE_PAUSED -> State.PAUSED
+            PlaybackState.STATE_STOPPED -> State.STOPPED
+            else -> State.UNKNOWN
         }
     }
 
