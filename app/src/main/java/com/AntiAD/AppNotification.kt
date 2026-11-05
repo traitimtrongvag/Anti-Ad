@@ -63,7 +63,7 @@ private fun AppNotificationHelper.createNotification(status: String): Notificati
         .setAutoCancel(false)
         .addAction(
             NotificationCompat.Action.Builder(
-                R.drawable.ic_launcher_foreground,
+                R.drawable.ic_notification_ad_off,
                 context.getString(R.string.stop),
                 PendingIntent.getService(
                     context,
