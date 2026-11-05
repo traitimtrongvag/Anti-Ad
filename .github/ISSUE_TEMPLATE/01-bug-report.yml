@@ -1,0 +1,40 @@
+name: "Bug report"
+description: "Report a problem with Anti-Ad"
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Search existing issues before opening a new report.
+
+        Do not include private notification contents or other sensitive information.
+  - type: textarea
+    attributes:
+      label: Problem description
+      description: Describe what happened and what you expected. Add relevant logs or screenshots after removing private information.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: List the steps needed to reproduce the problem.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+  - type: textarea
+    attributes:
+      label: Device and app information
+      description: Include the information below.
+      value: |
+        - Anti-Ad version:
+        - Android version:
+        - Device model:
+        - Spotify version:
+        - Notification Access enabled:
+        - Shizuku running and authorized:
+    validations:
+      required: true

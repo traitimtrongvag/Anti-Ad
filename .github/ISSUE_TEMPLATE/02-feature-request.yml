@@ -1,0 +1,15 @@
+name: "Feature request"
+description: "Suggest an improvement to Anti-Ad"
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    attributes:
+      label: What would you like to improve?
+      description: Describe the change and why it would be useful.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional information
+      description: Add examples, screenshots, or links that help explain the idea.
