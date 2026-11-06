@@ -23,5 +23,9 @@ class SpotifyControllerTest {
             SpotifyController.State.PLAYING_AD,
             SpotifyController.classifyPlaybackState(PlaybackState.STATE_PLAYING, "Advertisement")
         )
+        assertEquals(
+            SpotifyController.State.PLAYING_AD,
+            SpotifyController.classifyPlaybackState(PlaybackState.STATE_PLAYING, "إشهار")
+        )
     }
 }
