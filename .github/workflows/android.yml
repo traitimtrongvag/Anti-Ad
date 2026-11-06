@@ -29,8 +29,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build with Gradle
-        run: |
-          ./gradlew assembleDebug
+        run: ./gradlew assembleDebug assembleRelease
 
       - name: Extract Version Name
         id: extract_version
@@ -47,3 +46,9 @@ jobs:
         with:
           name: ad-interrupt-debug-build
           path: app/build/outputs/apk/debug/*.apk
+
+      - name: Upload Release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ad-interrupt-release-build
+          path: app/build/outputs/apk/release/*.apk
