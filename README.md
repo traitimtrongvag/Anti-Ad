@@ -19,9 +19,10 @@ For fewer interruptions from your phone's power manager, allow unrestricted back
 
 ## Downloads
 
-Get the latest release from [GitHub Releases](https://github.com/traitimtrongvag/Anti-Ad/releases). Development builds are available from [GitHub Actions](https://github.com/traitimtrongvag/Anti-Ad/actions).
+- **Latest Alpha Build**: Download from [Actions](https://github.com/traitimtrongvag/Anti-Ad/actions/)
+- **Latest Stable Build**: Download from [Releases](https://github.com/traitimtrongvag/Anti-Ad/releases)
 
-Only install builds from sources you trust. Notification Access is sensitive: Anti-Ad uses Spotify notifications to identify ads.
+[<img src="https://raw.githubusercontent.com/Kunzisoft/Github-badge/main/get-it-on-github.png" alt="Get it on GitHub" height="80">](https://github.com/traitimtrongvag/Anti-Ad/releases/latest)
 
 ## Help
 
