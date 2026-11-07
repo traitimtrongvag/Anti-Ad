@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
  - #2: Fixed notification listener binding retries when Android does not reconnect the service.
  - #3: Fixed buffering being treated as confirmed Spotify playback.
+ - #4: Fixed first-time Shizuku authorization by defaulting Anti-Ad to disabled and waiting for Shizuku's binder before requesting permission.
 
 ### Added
 
