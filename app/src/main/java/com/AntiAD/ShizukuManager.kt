@@ -37,7 +37,7 @@ object ShizukuManager {
             }
 
             try {
-                checkPermMethod = Shizuku::class.java.getMethod("checkSelfPermission", Int::class.javaPrimitiveType)
+                checkPermMethod = Shizuku::class.java.getMethod("checkSelfPermission")
             } catch (e: Exception) {
                 Log.w(TAG, "checkSelfPermission not available", e)
             }
@@ -69,11 +69,17 @@ object ShizukuManager {
     private fun hasPermission(): Boolean {
         val method = checkPermMethod ?: return true // Shizuku versions without this API cannot be checked.
         return try {
-            val result = method.invoke(null, 0) as? Int
+            val result = method.invoke(null) as? Int
             result == 0
         } catch (e: Exception) {
             Log.e(TAG, "Error checking permission", e)
             false
+        }
+    }
+
+    fun requestPermissionIfNeeded() {
+        if (!hasPermission()) {
+            requestPermission()
         }
     }
 
