@@ -139,7 +139,7 @@ object SpotifyController {
     internal fun classifyPlaybackState(state: Int, title: String): State {
         return when (state) {
             PlaybackState.STATE_PLAYING -> {
-                if (isAdTitle(title)) State.PLAYING_AD else State.PLAYING_MUSIC
+                if (findAdMatch(title, "", "") != null) State.PLAYING_AD else State.PLAYING_MUSIC
             }
             PlaybackState.STATE_PAUSED -> State.PAUSED
             PlaybackState.STATE_STOPPED -> State.STOPPED
@@ -172,16 +172,4 @@ object SpotifyController {
         }
     }
 
-    private fun isAdTitle(title: String): Boolean {
-        if (title.isBlank()) return false
-        val adKeywords = arrayOf(
-            "Advertisement", "Advertensie", "Werbung", "Publicité", "Pubblicità",
-            "広告", "广告", "廣告", "광고", "Реклама", "Anuncio", "Anúncio",
-            "Mainos", "Reklama", "Reklam", "Annonse", "Iklan", "Διαφήμιση",
-            "Advertentie", "Reklame", "Oglas", "Auglýsing", "علن", "إعلان",
-            "إشهار", "पब्लिसिटी", "विज्ञापन", "باز یابی", "오디오 광고",
-            "Quảng cáo"
-        )
-        return adKeywords.any { title.equals(it, ignoreCase = true) || title.contains(it, ignoreCase = true) }
-    }
 }
