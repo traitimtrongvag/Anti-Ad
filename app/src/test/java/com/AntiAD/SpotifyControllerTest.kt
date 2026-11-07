@@ -24,4 +24,12 @@ class SpotifyControllerTest {
             SpotifyController.classifyPlaybackState(PlaybackState.STATE_PLAYING, "Advertisement")
         )
     }
+
+    @Test
+    fun playbackOnlyKeywordDoesNotClassifyTrackAsAd() {
+        assertEquals(
+            SpotifyController.State.PLAYING_MUSIC,
+            SpotifyController.classifyPlaybackState(PlaybackState.STATE_PLAYING, "باز یابی")
+        )
+    }
 }
