@@ -10,7 +10,7 @@ class Preference(private val context: Context) {
     )
 
     private val APP_ENABLED = "appEnabled"
-    private val APP_ENABLED_DEFAULT = true
+    private val APP_ENABLED_DEFAULT = false
 
     private val Android13NotificationPermissionGranted = "Android13NotificationPermissionGranted"
     private val Android13NotificationPermissionGrantedDefault = false
