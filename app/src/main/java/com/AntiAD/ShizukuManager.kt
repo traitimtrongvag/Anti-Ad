@@ -9,6 +9,7 @@ object ShizukuManager {
     private var isShizukuRunning = false
     private var isShizukuAvailable = false
     private var isInitialized = false
+    private var permissionRequestPending = false
     private var newProcessMethod: java.lang.reflect.Method? = null
     private var checkPermMethod: java.lang.reflect.Method? = null
     private var requestPermMethod: java.lang.reflect.Method? = null
@@ -16,6 +17,10 @@ object ShizukuManager {
     private val binderReceivedListener = Shizuku.OnBinderReceivedListener {
         isShizukuAvailable = true
         isShizukuRunning = true
+        if (permissionRequestPending) {
+            permissionRequestPending = false
+            requestPermissionIfNeeded()
+        }
     }
 
     private val binderDeadListener = Shizuku.OnBinderDeadListener {
@@ -37,7 +42,7 @@ object ShizukuManager {
             }
 
             try {
-                checkPermMethod = Shizuku::class.java.getMethod("checkSelfPermission", Int::class.javaPrimitiveType)
+                checkPermMethod = Shizuku::class.java.getMethod("checkSelfPermission")
             } catch (e: Exception) {
                 Log.w(TAG, "checkSelfPermission not available", e)
             }
@@ -69,12 +74,27 @@ object ShizukuManager {
     private fun hasPermission(): Boolean {
         val method = checkPermMethod ?: return true // Shizuku versions without this API cannot be checked.
         return try {
-            val result = method.invoke(null, 0) as? Int
+            val result = method.invoke(null) as? Int
             result == 0
         } catch (e: Exception) {
             Log.e(TAG, "Error checking permission", e)
             false
         }
+    }
+
+    fun requestPermissionIfNeeded() {
+        if (!Shizuku.pingBinder()) {
+            permissionRequestPending = true
+            return
+        }
+        permissionRequestPending = false
+        if (!hasPermission()) {
+            requestPermission()
+        }
+    }
+
+    fun cancelPendingPermissionRequest() {
+        permissionRequestPending = false
     }
 
     fun requestPermission() {
