@@ -20,6 +20,7 @@ class NotificationListener : NotificationListenerService() {
     private var wakeLock: PowerManager.WakeLock? = null
     private lateinit var audioManager: AudioManager
     private var isMutedByApp = false
+    private val activeAdNotifications = ActiveAdNotifications()
     private var unmuteRunnable: Runnable? = null
     private var rebindRequested = false
     private var listenerConnected = false
@@ -80,6 +81,7 @@ class NotificationListener : NotificationListenerService() {
                 requestUnbind()
                 listenerConnected = false
                 rebindRequested = false
+                activeAdNotifications.clear()
                 resetProcessingState(InterruptState.IDLE)
                 stopForeground(true)
                 stopSelf()
@@ -134,6 +136,7 @@ class NotificationListener : NotificationListenerService() {
         rebindRequested = false
         logNotificationAccessState("listener connected")
         if (!preference.isEnabled()) {
+            activeAdNotifications.clear()
             resetProcessingState(InterruptState.IDLE)
             stopForeground(true)
             stopSelf()
@@ -143,6 +146,7 @@ class NotificationListener : NotificationListenerService() {
         startForegroundCompat("Anti-Ad, listening for Spotify ads")
         logLifecycle("Listener Connected", "Notification Listener Connected", "Lifecycle Event")
         resetProcessingState(InterruptState.LISTENING)
+        refreshActiveAdNotifications()
     }
 
     override fun onListenerDisconnected() {
@@ -171,6 +175,7 @@ class NotificationListener : NotificationListenerService() {
         }
         wakeLock = null
         listenerConnected = false
+        activeAdNotifications.clear()
         resetProcessingState(InterruptState.IDLE)
 
         logLifecycle("Service Destroyed", "Notification Listener Service Destroyed", "Lifecycle Event")
@@ -193,15 +198,19 @@ class NotificationListener : NotificationListenerService() {
                 val parser = NotificationParser(this)
                 val isAd = parser.isAd()
 
+                if (isAd) {
+                    activeAdNotifications.update(it.key, true)
+                    muteForAd()
+                } else if (!activeAdNotifications.update(it.key, false)) {
+                    unmute()
+                }
+
                 val isDebugEnabled = preference.isDebugLogEnabled()
                 if (isDebugEnabled) {
                     parser.lastLogEntry?.let { entry -> LogManager.addLog(entry) }
                 }
 
-                when {
-                    isAd -> handleAdDetected(preference)
-                    else -> handleNonAdNotification(preference)
-                }
+                if (isAd) handleAdDetected(preference)
             }
         }
     }
@@ -210,14 +219,15 @@ class NotificationListener : NotificationListenerService() {
         super.onNotificationRemoved(sbn)
         sbn?.let {
             if (it.packageName == SPOTIFY_PACKAGE) {
-                if (!isProcessingAd) {
-                    scheduleUnmute()
-                }
+                if (!activeAdNotifications.remove(it.key)) scheduleUnmute()
             }
         }
     }
 
     private fun handleAdDetected(preference: Preference) {
+        unmuteRunnable?.let(handler::removeCallbacks)
+        unmuteRunnable = null
+
         val now = System.currentTimeMillis()
         if (now - lastAdTimestamp < AD_COOLDOWN_MS || isProcessingAd) {
             return
@@ -226,23 +236,36 @@ class NotificationListener : NotificationListenerService() {
         isProcessingAd = true
         lastAdTimestamp = now
         currentState = InterruptState.AD_DETECTED
-        unmuteRunnable?.let(handler::removeCallbacks)
-        unmuteRunnable = null
-        if (!isMutedByApp) {
-            audioManager.adjustStreamVolume(
-                AudioManager.STREAM_MUSIC,
-                AudioManager.ADJUST_MUTE,
-                0
-            )
-            isMutedByApp = true
-        }
         updateNotification("Anti-Ad, advertisement detected")
         logLifecycle("Ad Detected", "Spotify advertisement detected, music muted", "Action")
         executeInterruptFlow(preference)
     }
 
-    private fun handleNonAdNotification(preference: Preference) {
-        if (!isProcessingAd) {
+    private fun muteForAd() {
+        if (!isMutedByApp) {
+            isMutedByApp = !audioManager.isStreamMute(AudioManager.STREAM_MUSIC)
+        }
+        audioManager.adjustStreamVolume(
+            AudioManager.STREAM_MUSIC,
+            AudioManager.ADJUST_MUTE,
+            0
+        )
+    }
+
+    private fun refreshActiveAdNotifications() {
+        val activeAds = try {
+            activeNotifications.orEmpty()
+                .filter { it.packageName == SPOTIFY_PACKAGE }
+                .filter { NotificationParser(AppNotificationInfo(it.notification, it.packageName)).isAd() }
+                .map { it.key }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to refresh active Spotify notifications", e)
+            return
+        }
+
+        if (activeAdNotifications.replace(activeAds)) {
+            muteForAd()
+        } else {
             unmute()
         }
     }
@@ -257,7 +280,7 @@ class NotificationListener : NotificationListenerService() {
     }
 
     private fun unmute() {
-        if (!isMutedByApp) return
+        if (activeAdNotifications.hasActiveAds() || !isMutedByApp) return
         audioManager.adjustStreamVolume(
             AudioManager.STREAM_MUSIC,
             AudioManager.ADJUST_UNMUTE,
