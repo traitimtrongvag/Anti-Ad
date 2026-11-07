@@ -9,6 +9,7 @@ object ShizukuManager {
     private var isShizukuRunning = false
     private var isShizukuAvailable = false
     private var isInitialized = false
+    private var permissionRequestPending = false
     private var newProcessMethod: java.lang.reflect.Method? = null
     private var checkPermMethod: java.lang.reflect.Method? = null
     private var requestPermMethod: java.lang.reflect.Method? = null
@@ -16,6 +17,10 @@ object ShizukuManager {
     private val binderReceivedListener = Shizuku.OnBinderReceivedListener {
         isShizukuAvailable = true
         isShizukuRunning = true
+        if (permissionRequestPending) {
+            permissionRequestPending = false
+            requestPermissionIfNeeded()
+        }
     }
 
     private val binderDeadListener = Shizuku.OnBinderDeadListener {
@@ -78,9 +83,18 @@ object ShizukuManager {
     }
 
     fun requestPermissionIfNeeded() {
+        if (!Shizuku.pingBinder()) {
+            permissionRequestPending = true
+            return
+        }
+        permissionRequestPending = false
         if (!hasPermission()) {
             requestPermission()
         }
+    }
+
+    fun cancelPendingPermissionRequest() {
+        permissionRequestPending = false
     }
 
     fun requestPermission() {

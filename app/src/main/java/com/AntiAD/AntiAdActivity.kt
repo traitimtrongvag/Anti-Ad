@@ -210,6 +210,7 @@ class AntiAdActivity : Activity() {
                 ShizukuManager.requestPermissionIfNeeded()
                 startNotificationService()
             } else {
+                ShizukuManager.cancelPendingPermissionRequest()
                 val intent = Intent(this, NotificationListener::class.java)
                 intent.action = "STOP_SERVICE"
                 startService(intent)
