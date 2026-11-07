@@ -6,10 +6,10 @@ import rikka.shizuku.Shizuku
 
 object ShizukuManager {
     private val TAG = "ShizukuManager"
-    private var isShizukuRunning = false
-    private var isShizukuAvailable = false
+    @Volatile private var isShizukuRunning = false
+    @Volatile private var isShizukuAvailable = false
     private var isInitialized = false
-    private var permissionRequestPending = false
+    @Volatile private var permissionRequestPending = false
     private var newProcessMethod: java.lang.reflect.Method? = null
     private var checkPermMethod: java.lang.reflect.Method? = null
     private var requestPermMethod: java.lang.reflect.Method? = null
@@ -28,9 +28,9 @@ object ShizukuManager {
         isShizukuAvailable = false
     }
 
+    @Synchronized
     fun initialize(context: Context) {
         if (!isInitialized) {
-            isInitialized = true
             Shizuku.addBinderReceivedListener(binderReceivedListener)
             Shizuku.addBinderDeadListener(binderDeadListener)
 
@@ -56,6 +56,7 @@ object ShizukuManager {
                     Log.w(TAG, "requestPermission not available", e2)
                 }
             }
+            isInitialized = true
         }
 
         try {
