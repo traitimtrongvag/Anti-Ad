@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [0.1.0] - 2026-11-08
 
+This is the first release of Anti-Ad, an Android application designed to detect Spotify advertisement notifications and control media playback using Android Notification Access and Shizuku.
+
+This release focuses on improving notification listener reliability, Spotify playback detection, Shizuku authorization, and automated testing.
+
 ### Fixed
 
  - #2: Fixed notification listener binding retries when Android does not reconnect the service.
