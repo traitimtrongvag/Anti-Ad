@@ -51,19 +51,30 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew assembleDebug assembleRelease
+
+      - name: Sign and verify release APK signatures
+        if: github.event_name != 'pull_request'
         env:
-          ANDROID_KEYSTORE_PATH: ${{ github.event_name != 'pull_request' && format('{0}/antiad-release.jks', runner.temp) || '' }}
+          ANDROID_KEYSTORE_PATH: ${{ runner.temp }}/antiad-release.jks
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-
-      - name: Verify release APK signatures
-        if: github.event_name != 'pull_request'
         run: |
           APK="$(find app/build/outputs/apk/release -maxdepth 1 -name '*.apk' -print -quit)"
           APKSIGNER="$(find "$ANDROID_HOME/build-tools" -type f -name apksigner | sort -V | tail -n 1)"
           test -n "$APK" || { echo "::error::Release APK not found"; exit 1; }
           test -x "$APKSIGNER" || { echo "::error::apksigner not found"; exit 1; }
+          "$APKSIGNER" sign \
+            --ks "$ANDROID_KEYSTORE_PATH" \
+            --ks-key-alias "$ANDROID_KEY_ALIAS" \
+            --ks-pass env:ANDROID_KEYSTORE_PASSWORD \
+            --key-pass env:ANDROID_KEY_PASSWORD \
+            --v1-signing-enabled true \
+            --v2-signing-enabled true \
+            --v3-signing-enabled true \
+            --out "$RUNNER_TEMP/antiad-release-signed.apk" \
+            "$APK"
+          mv "$RUNNER_TEMP/antiad-release-signed.apk" "$APK"
           "$APKSIGNER" verify --verbose "$APK" | tee "$RUNNER_TEMP/apksigner-report.txt"
           grep -Fq 'Verified using v1 scheme (JAR signing): true' "$RUNNER_TEMP/apksigner-report.txt"
           grep -Fq 'Verified using v2 scheme (APK Signature Scheme v2): true' "$RUNNER_TEMP/apksigner-report.txt"
