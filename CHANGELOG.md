@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+
+## [0.1.0] - 2026-11-08
+
 ### Fixed
 
  - #2: Fixed notification listener binding retries when Android does not reconnect the service.
