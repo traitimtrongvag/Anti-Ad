@@ -9,3 +9,6 @@
 .cxx
 local.properties
 /app/build
+/key.txt
+/key.properties
+/app/antiad-release.jks
