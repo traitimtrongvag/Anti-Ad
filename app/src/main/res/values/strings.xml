@@ -26,8 +26,8 @@
     </string>
     <string name="github">GitHub</string>
     <string name="report_issue">report issue</string>
-    <string name="github_link" translatable="false">https://github.com/aghontpi/ad-interrupt</string>
-    <string name="github_issues_link" translatable="false">https://github.com/aghontpi/ad-interrupt/issues/new</string>
+    <string name="github_link" translatable="false">https://github.com/traitimtrongvag/Anti-Ad</string>
+    <string name="github_issues_link" translatable="false">https://github.com/traitimtrongvag/Anti-Ad/issues/new</string>
     <string name="notifications_optional">Notification updates (optional)</string>
     <string name="close">Close</string>
     <string name="stop">Stop</string>
