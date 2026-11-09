@@ -7,6 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- #8: Fixed Spotify launch fallback when both service launch attempts fail.
+
 ### Added
 
  - #11: Added a troubleshooting info button beside the Force-Stop Delay setting.
