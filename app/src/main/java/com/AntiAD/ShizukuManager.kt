@@ -140,12 +140,13 @@ object ShizukuManager {
     }
 
     fun launchSpotifyAndGoHome(): Boolean {
-        val serviceLaunched = runCommand("am startservice -n com.spotify.music/.spotify.MusicService 2>/dev/null || am startservice -n com.spotify.music/.MusicService 2>/dev/null")
-        if (serviceLaunched != null) {
-            return true
-        }
-        // The fallback launches Spotify without animation, then returns to the home screen.
-        return runCommand("am start -n com.spotify.music/.MainActivity --activity-no-animation && sleep 0.5 && input keyevent KEYCODE_HOME") != null
+        // Fall back to the activity when neither service component can be started.
+        return runCommand(
+            "am startservice -n com.spotify.music/.spotify.MusicService 2>/dev/null " +
+                "|| am startservice -n com.spotify.music/.MusicService 2>/dev/null " +
+                "|| (am start -n com.spotify.music/.MainActivity --activity-no-animation " +
+                "&& sleep 0.5 && input keyevent KEYCODE_HOME)"
+        ) != null
     }
 
     fun sendToBackground() {
