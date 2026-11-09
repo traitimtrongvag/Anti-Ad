@@ -57,13 +57,11 @@ class NotificationListener : NotificationListenerService() {
         audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
         ShizukuManager.initialize(applicationContext)
 
-        // Acquire a partial WakeLock to keep the CPU running when the screen is off.
-        // This prevents Android from throttling the service during long screen-off periods.
         val powerManager = getSystemService(POWER_SERVICE) as PowerManager
         wakeLock = powerManager.newWakeLock(
             PowerManager.PARTIAL_WAKE_LOCK,
             "anti_ad:NotificationListenerWakeLock"
-        ).also { it.acquire() }
+        )
 
         logNotificationAccessState("service created")
         logLifecycle("Service Created", "Notification Listener Service Created", "Lifecycle Event")
@@ -168,15 +166,10 @@ class NotificationListener : NotificationListenerService() {
         logNotificationAccessState("service destroyed")
         instance = null
 
-        try {
-            if (wakeLock?.isHeld == true) wakeLock?.release()
-        } catch (e: Exception) {
-            Log.e(TAG, "WakeLock release failed", e)
-        }
-        wakeLock = null
         listenerConnected = false
         activeAdNotifications.clear()
         resetProcessingState(InterruptState.IDLE)
+        wakeLock = null
 
         logLifecycle("Service Destroyed", "Notification Listener Service Destroyed", "Lifecycle Event")
     }
@@ -235,6 +228,7 @@ class NotificationListener : NotificationListenerService() {
 
         isProcessingAd = true
         lastAdTimestamp = now
+        wakeLock?.acquire(INTERRUPT_WAKE_LOCK_TIMEOUT_MS)
         currentState = InterruptState.AD_DETECTED
         updateNotification("Anti-Ad, advertisement detected")
         logLifecycle("Ad Detected", "Spotify advertisement detected, music muted", "Action")
@@ -310,6 +304,7 @@ class NotificationListener : NotificationListenerService() {
 
     private fun resetProcessingState(state: InterruptState) {
         handler.removeCallbacksAndMessages(null)
+        releaseWakeLock()
         rebindRequested = false
         unmuteRunnable = null
         unmute()
@@ -451,6 +446,7 @@ class NotificationListener : NotificationListenerService() {
     }
 
     private fun finishInterruptFlow() {
+        releaseWakeLock()
         currentState = InterruptState.LISTENING
         updateNotification("Anti-Ad, listening for Spotify ads")
         spotifyLaunchAttempts = 0
@@ -461,6 +457,7 @@ class NotificationListener : NotificationListenerService() {
 
 
     private fun handleError(message: String) {
+        releaseWakeLock()
         Log.e(TAG, "Error: $message")
         logLifecycle("Error", message, "Error")
         currentState = InterruptState.LISTENING
@@ -474,6 +471,14 @@ class NotificationListener : NotificationListenerService() {
         val preference = Preference(applicationContext)
         if (preference.isNotificationsEnabled()) {
             appNotificationHelper?.updateNotification(msg)
+        }
+    }
+
+    private fun releaseWakeLock() {
+        try {
+            if (wakeLock?.isHeld == true) wakeLock?.release()
+        } catch (e: Exception) {
+            Log.e(TAG, "WakeLock release failed", e)
         }
     }
 
@@ -496,6 +501,7 @@ class NotificationListener : NotificationListenerService() {
     companion object {
         const val SPOTIFY_PACKAGE = "com.spotify.music"
         private const val REBIND_RETRY_DELAY_MS = 30_000L
+        private const val INTERRUPT_WAKE_LOCK_TIMEOUT_MS = 60_000L
         @Volatile var startTime: Long = 0
         @Volatile var instance: NotificationListener? = null
     }
