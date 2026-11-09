@@ -13,6 +13,9 @@
     <string name="app_status">Enable (interrupt Spotify ads)</string>
     <string name="app_status_permission_not_granted">Enable (Grant Permission first)</string>
     <string name="about">about</string>
+    <string name="troubleshooting_info_description">Troubleshooting information</string>
+    <string name="troubleshooting_dialog_title">Spotify starts the previous song</string>
+    <string name="troubleshooting_dialog_message">Spotify may need a few seconds to stabilize after an ad starts. If Anti-Ad interrupts it too soon, Spotify may resume the song that was playing before the ad.\n\nTo fix this, open Settings &gt; Force-Stop Delay and increase the delay from the default 3 seconds to 4 or 5 seconds.</string>
     <string name="about_window_text">"Anti-Ad" interrupts Spotify advertisements by force-stopping Spotify when an ad is detected, then relaunching and resuming playback. It works by utilizing notifications posted by Spotify. Only notifications from Spotify are accessed for identification and discarded immediately.         <![CDATA[This app is OpenSource.]]>
         <![CDATA[<br/><br/>]]>
         <![CDATA[<b>

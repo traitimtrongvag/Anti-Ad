@@ -27,6 +27,7 @@ class AntiAdActivity : Activity() {
     private var debugLogDialog: AlertDialog? = null
     private var settingsDialog: AlertDialog? = null
     private var shizukuDialog: AlertDialog? = null
+    private var troubleshootingDialog: AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +53,7 @@ class AntiAdActivity : Activity() {
         super.onDestroy()
         listOf(
             debugLogDialog, aboutDialog, batteryOptimizationDialog,
-            settingsDialog, shizukuDialog
+            settingsDialog, shizukuDialog, troubleshootingDialog
         ).forEach { dialog ->
             if (dialog != null && dialog.isShowing) {
                 dialog.dismiss()
@@ -284,6 +285,18 @@ class AntiAdActivity : Activity() {
             setOnValueChangedListener { _, _, newVal ->
                 preference.setForceStopDelay(newVal)
             }
+        }
+
+        settingsView.findViewById<ImageButton>(R.id.troubleshooting_info_btn)?.setOnClickListener {
+            troubleshootingDialog = AlertDialog.Builder(this)
+                .setTitle(R.string.troubleshooting_dialog_title)
+                .setMessage(R.string.troubleshooting_dialog_message)
+                .setPositiveButton(R.string.close, null)
+                .create()
+                .also { dialog ->
+                    dialog.setOnDismissListener { troubleshootingDialog = null }
+                    dialog.show()
+                }
         }
 
         settingsView.findViewById<Button>(R.id.btn_close_settings)?.setOnClickListener {

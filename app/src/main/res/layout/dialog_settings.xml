@@ -34,12 +34,29 @@
                 android:layout_weight="1"
                 android:orientation="vertical">
 
-                <TextView
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/delay_setting_title"
-                    android:textColor="?android:attr/textColorPrimary"
-                    android:textSize="14sp" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/delay_setting_title"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textSize="14sp" />
+
+                    <ImageButton
+                        android:id="@+id/troubleshooting_info_btn"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/troubleshooting_info_description"
+                        android:padding="12dp"
+                        android:src="@drawable/ic_info_material"
+                        android:tint="?android:attr/colorAccent" />
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
