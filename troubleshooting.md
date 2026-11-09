@@ -15,6 +15,10 @@ For setup instructions, see [Anti-Ad Help](help.md).
 - Open Anti-Ad and check the Shizuku status. Restart Shizuku and authorize Anti-Ad again if needed.
 - Check that Spotify is installed and can be opened normally.
 
+## Spotify restarts the previous song after an ad
+
+Spotify may need a few seconds to stabilize after an ad starts. If Anti-Ad interrupts it too soon, Spotify may resume the song that was playing before the ad. In Anti-Ad, open **Settings > Force-Stop Delay** and increase the delay from the default 3 seconds to 4 or 5 seconds.
+
 ## Spotify does not resume playback
 
 After an interruption, Anti-Ad waits for Spotify to become ready and sends a playback command. If playback does not resume, open Spotify and start playback manually. This can happen when Spotify or the device delays its media session.
