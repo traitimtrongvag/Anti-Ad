@@ -141,12 +141,20 @@ object ShizukuManager {
 
     fun launchSpotifyAndGoHome(): Boolean {
         // Fall back to the activity when neither service component can be started.
-        return runCommand(
+        val process = runCommand(
             "am startservice -n com.spotify.music/.spotify.MusicService 2>/dev/null " +
                 "|| am startservice -n com.spotify.music/.MusicService 2>/dev/null " +
                 "|| (am start -n com.spotify.music/.MainActivity --activity-no-animation " +
                 "&& sleep 0.5 && input keyevent KEYCODE_HOME)"
-        ) != null
+        ) ?: return false
+
+        return try {
+            process.waitFor() == 0
+        } catch (e: InterruptedException) {
+            Thread.currentThread().interrupt()
+            Log.e(TAG, "Interrupted while launching Spotify", e)
+            false
+        }
     }
 
     fun sendToBackground() {
