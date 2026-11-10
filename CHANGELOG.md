@@ -11,6 +11,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - #8: Fixed Spotify launch fallback when both service launch attempts fail.
 
+- #12: Verify Spotify launch success using the Shizuku command's exit status.
+
 ### Added
 
  - #10: Reduced battery use by holding the partial wake lock only during ad processing.
