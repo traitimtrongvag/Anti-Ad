@@ -11,6 +11,14 @@ Anti-Ad watches for Spotify notifications that look like advertisements. When it
 
 The app needs Notification Access to recognize Spotify ads. Shizuku is needed to interrupt Spotify. Both must remain enabled while you use Anti-Ad.
 
+## Can Anti-Ad get my Spotify account suspended?
+
+Anti-Ad does not modify Spotify's APK, inject code into Spotify, or change its internal files. It works externally through Android's Notification Access and Shizuku to detect ad notifications and control media playback.
+
+This is different from using a modified Spotify client or modifying Spotify's internal behavior. However, we cannot guarantee that Spotify will never take action against an account, as this depends on Spotify's Terms of Service and enforcement policies.
+
+Use Anti-Ad at your own discretion. The project does not guarantee account safety or protection against account restrictions.
+
 ## Keep Anti-Ad running
 
 Some phones limit background apps to save power. If Anti-Ad stops responding after the screen has been off or the app has been unused, allow unrestricted background or battery use for Anti-Ad in your phone settings. The setting name and location depend on the phone.
