@@ -21,6 +21,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
  
  - #11: Added a troubleshooting info button beside the Force-Stop Delay setting.
 
+### Changed
+ 
+ - #20: Format log timestamps using the device's local time and time preference.
+
 
 ## [0.1.0] - 2026-11-08
 
