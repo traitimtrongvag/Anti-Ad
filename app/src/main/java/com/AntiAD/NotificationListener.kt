@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.PowerManager
+import android.os.SystemClock
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
@@ -42,7 +43,7 @@ class NotificationListener : NotificationListenerService() {
 
     private var currentState = InterruptState.IDLE
     private var isProcessingAd = false
-    private var lastAdTimestamp: Long = 0
+    private var lastAdElapsedRealtime: Long? = null
     private val AD_COOLDOWN_MS = 30000L // 30 seconds cooldown between interrupts
     private var spotifyLaunchAttempts = 0
     private val MAX_SPOTIFY_LAUNCH_ATTEMPTS = 3
@@ -221,13 +222,13 @@ class NotificationListener : NotificationListenerService() {
         unmuteRunnable?.let(handler::removeCallbacks)
         unmuteRunnable = null
 
-        val now = System.currentTimeMillis()
-        if (now - lastAdTimestamp < AD_COOLDOWN_MS || isProcessingAd) {
+        val now = SystemClock.elapsedRealtime()
+        if (lastAdElapsedRealtime?.let { now - it < AD_COOLDOWN_MS } == true || isProcessingAd) {
             return
         }
 
         isProcessingAd = true
-        lastAdTimestamp = now
+        lastAdElapsedRealtime = now
         wakeLock?.acquire(INTERRUPT_WAKE_LOCK_TIMEOUT_MS)
         currentState = InterruptState.AD_DETECTED
         updateNotification("Anti-Ad, advertisement detected")
