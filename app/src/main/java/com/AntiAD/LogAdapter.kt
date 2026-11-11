@@ -7,9 +7,8 @@ import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import java.text.SimpleDateFormat
+import android.text.format.DateFormat
 import java.util.Date
-import java.util.Locale
 
 class LogAdapter(private var logs: List<LogEntry>) : BaseAdapter() {
 
@@ -35,7 +34,7 @@ class LogAdapter(private var logs: List<LogEntry>) : BaseAdapter() {
         val log = getItem(position)
         val context = parent.context
 
-        val timeFormat = SimpleDateFormat("h:mm:ss a", Locale.getDefault())
+        val timeFormat = DateFormat.getTimeFormat(context)
         val timeString = timeFormat.format(Date(log.timestamp))
         holder.appNameTimestamp.text = "${log.appName} $timeString"
 
