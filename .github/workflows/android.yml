@@ -82,14 +82,14 @@ jobs:
           mv app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/ad-interrupt-debug-build-${{ env.VERSION_NAME }}.apk 2>/dev/null || true
 
       - name: Upload Debug APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ad-interrupt-debug-build
           path: app/build/outputs/apk/debug/*.apk
 
       - name: Upload Release APK
         if: github.event_name != 'pull_request'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ad-interrupt-release-build
           path: app/build/outputs/apk/release/*.apk
