@@ -41,9 +41,14 @@ internal fun findAdMatch(title: String, text: String, subText: String): String? 
     if (subText.contains("Advertisement")) return subText
     if (text.contains("Advertisement")) return text
 
-    return listOf(subText, title, text).firstOrNull { field ->
-        field != "null" && field.isNotEmpty() &&
-            AD_KEYWORDS.any { field.contains(it, ignoreCase = true) }
+    fun matchesKeyword(field: String) = field != "null" && field.isNotEmpty() &&
+        AD_KEYWORDS.any { field.contains(it, ignoreCase = true) }
+
+    return when {
+        matchesKeyword(subText) -> subText
+        matchesKeyword(title) -> title
+        matchesKeyword(text) -> text
+        else -> null
     }
 }
 
