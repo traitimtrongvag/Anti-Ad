@@ -88,13 +88,11 @@ object SpotifyController {
                 }
                 true
             } else {
-                Log.w(TAG, "No MediaController available for Spotify, launching app")
-                openSpotify(context)
+                Log.w(TAG, "No MediaController available for Spotify")
                 false
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error resuming playback", e)
-            openSpotify(context)
             false
         }
     }
