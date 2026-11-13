@@ -378,11 +378,12 @@ class NotificationListener : NotificationListenerService() {
 
         logLifecycle("Launching Spotify", "Opening Spotify application", "Action")
 
-        // Use Shizuku to launch Spotify and immediately go home to avoid UI flash
+        // Use Shizuku to launch Spotify in the background.
         val launched = if (ShizukuManager.isRunning()) {
             ShizukuManager.launchSpotifyAndGoHome()
         } else {
-            SpotifyController.openSpotify(applicationContext)
+            Log.w(TAG, "Shizuku unavailable, cannot launch Spotify in the background")
+            false
         }
 
         if (launched) {
