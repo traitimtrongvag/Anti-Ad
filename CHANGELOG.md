@@ -15,6 +15,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - #19: Use a monotonic clock for the ad-interrupt cooldown.
 
+- #22: Fixed Spotify relaunch and recovery to stay in the background without opening its UI.
+
 ### Added
 
  - #10: Reduced battery use by holding the partial wake lock only during ad processing.
