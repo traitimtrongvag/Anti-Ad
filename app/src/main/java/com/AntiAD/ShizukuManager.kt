@@ -139,31 +139,6 @@ object ShizukuManager {
         }
     }
 
-    fun launchSpotifyAndGoHome(): Boolean {
-        val process = runCommand(
-            "am startservice -n com.spotify.music/com.spotify.mobile.android.service.media.MediaPlaybackService 2>&1 " +
-                "|| am startservice -a android.media.browse.MediaBrowserService -p com.spotify.music 2>&1 " +
-                "|| am startservice -n com.spotify.music/.spotify.MusicService 2>&1 " +
-                "|| am startservice -n com.spotify.music/.MusicService 2>&1"
-        ) ?: return false
-
-        return try {
-            val output = process.inputStream.bufferedReader().use { it.readText() }.trim()
-            val exitCode = process.waitFor()
-            if (exitCode != 0) {
-                Log.e(TAG, "Spotify background service launch failed (exit $exitCode): $output")
-            }
-            exitCode == 0
-        } catch (e: InterruptedException) {
-            Thread.currentThread().interrupt()
-            Log.e(TAG, "Interrupted while launching Spotify", e)
-            false
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to read Spotify service launch result", e)
-            false
-        }
-    }
-
     fun sendToBackground() {
         runCommand("input keyevent KEYCODE_HOME")
     }

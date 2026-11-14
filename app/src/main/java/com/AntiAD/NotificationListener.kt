@@ -36,7 +36,6 @@ class NotificationListener : NotificationListenerService() {
         AD_DETECTED,
         INTERRUPTING,
         WAITING_FOR_SPOTIFY_STOP,
-        LAUNCHING_SPOTIFY,
         WAITING_FOR_SPOTIFY_READY,
         RESUMING_PLAYBACK
     }
@@ -45,8 +44,6 @@ class NotificationListener : NotificationListenerService() {
     private var isProcessingAd = false
     private var lastAdElapsedRealtime: Long? = null
     private val AD_COOLDOWN_MS = 30000L // 30 seconds cooldown between interrupts
-    private var spotifyLaunchAttempts = 0
-    private val MAX_SPOTIFY_LAUNCH_ATTEMPTS = 3
     private var isWaitingForSpotifyStop = false
     private var isWaitingForSpotifyReady = false
 
@@ -305,12 +302,12 @@ class NotificationListener : NotificationListenerService() {
 
     private fun resetProcessingState(state: InterruptState) {
         handler.removeCallbacksAndMessages(null)
+        SpotifyController.disconnectMediaBrowser()
         releaseWakeLock()
         rebindRequested = false
         unmuteRunnable = null
         unmute()
         isProcessingAd = false
-        spotifyLaunchAttempts = 0
         isWaitingForSpotifyStop = false
         isWaitingForSpotifyReady = false
         currentState = state
@@ -362,7 +359,7 @@ class NotificationListener : NotificationListenerService() {
                 }
                 currentState = InterruptState.WAITING_FOR_SPOTIFY_STOP
                 handler.postDelayed({
-                    openAndResumeSpotify(preference)
+                    connectAndResumeSpotify(preference)
                 }, 0)
             } else {
                 handleError("Shizuku force-stop failed")
@@ -372,36 +369,10 @@ class NotificationListener : NotificationListenerService() {
         }
     }
 
-    private fun openAndResumeSpotify(preference: Preference) {
-        currentState = InterruptState.LAUNCHING_SPOTIFY
-        updateNotification("Anti-Ad, launching Spotify")
-
-        logLifecycle("Launching Spotify", "Opening Spotify application", "Action")
-
-        // Use Shizuku to launch Spotify in the background.
-        val launched = if (ShizukuManager.isRunning()) {
-            ShizukuManager.launchSpotifyAndGoHome()
-        } else {
-            Log.w(TAG, "Shizuku unavailable, cannot launch Spotify in the background")
-            false
-        }
-
-        if (launched) {
-            currentState = InterruptState.WAITING_FOR_SPOTIFY_READY
-            // Wait for Spotify to initialize, then resume
-            handler.postDelayed({
-                resumeSpotifyPlayback(preference)
-            }, 200)
-        } else {
-            spotifyLaunchAttempts++
-            if (spotifyLaunchAttempts < MAX_SPOTIFY_LAUNCH_ATTEMPTS) {
-                handler.postDelayed({
-                    openAndResumeSpotify(preference)
-                }, 300)
-            } else {
-                handleError("Failed to launch Spotify after $MAX_SPOTIFY_LAUNCH_ATTEMPTS attempts")
-            }
-        }
+    private fun connectAndResumeSpotify(preference: Preference) {
+        currentState = InterruptState.WAITING_FOR_SPOTIFY_READY
+        logLifecycle("Connecting to Spotify", "Connecting to Spotify media service", "Action")
+        resumeSpotifyPlayback(preference)
     }
 
     private fun resumeSpotifyPlayback(preference: Preference) {
@@ -449,9 +420,9 @@ class NotificationListener : NotificationListenerService() {
 
     private fun finishInterruptFlow() {
         releaseWakeLock()
+        SpotifyController.disconnectMediaBrowser()
         currentState = InterruptState.LISTENING
         updateNotification("Anti-Ad, listening for Spotify ads")
-        spotifyLaunchAttempts = 0
         isProcessingAd = false
         unmute()
     }
@@ -460,11 +431,11 @@ class NotificationListener : NotificationListenerService() {
 
     private fun handleError(message: String) {
         releaseWakeLock()
+        SpotifyController.disconnectMediaBrowser()
         Log.e(TAG, "Error: $message")
         logLifecycle("Error", message, "Error")
         currentState = InterruptState.LISTENING
         updateNotification("Anti-Ad, error: $message")
-        spotifyLaunchAttempts = 0
         isProcessingAd = false
         unmute()
     }
