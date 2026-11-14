@@ -17,6 +17,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - #22: Fixed Spotify relaunch and recovery to stay in the background without opening its UI.
 
+- #23: Fixed Spotify recovery after force-stop by connecting to its MediaBrowser service.
+
 ### Added
 
  - #10: Reduced battery use by holding the partial wake lock only during ad processing.
