@@ -1,9 +1,10 @@
 package com.AntiAD
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.media.browse.MediaBrowser
 import android.media.session.MediaController
-import android.media.session.MediaSession
 import android.media.session.PlaybackState
 import android.os.Handler
 import android.util.Log
@@ -11,6 +12,8 @@ import android.util.Log
 object SpotifyController {
     private val TAG = "SpotifyController"
     private const val SPOTIFY_PACKAGE = "com.spotify.music"
+    private var mediaBrowser: MediaBrowser? = null
+    private var mediaBrowserController: MediaController? = null
 
     enum class State {
         UNKNOWN,
@@ -27,6 +30,36 @@ object SpotifyController {
     }
 
     fun waitForMediaController(context: Context, handler: Handler, callback: MediaControllerCallback, maxAttempts: Int = 15, delayMs: Long = 400) {
+        disconnectMediaBrowser()
+        val serviceInfo = context.packageManager.resolveService(
+            Intent("android.media.browse.MediaBrowserService").setPackage(SPOTIFY_PACKAGE),
+            0
+        )?.serviceInfo
+
+        if (serviceInfo == null) {
+            Log.w(TAG, "Spotify media browser service not found")
+        } else {
+            val browser = MediaBrowser(
+                context,
+                ComponentName(serviceInfo.packageName, serviceInfo.name),
+                object : MediaBrowser.ConnectionCallback() {
+                    override fun onConnected() {
+                        mediaBrowser?.takeIf { it.isConnected }?.let {
+                            mediaBrowserController = MediaController(context, it.sessionToken)
+                            Log.d(TAG, "Connected to Spotify media browser")
+                        }
+                    }
+
+                    override fun onConnectionFailed() {
+                        Log.w(TAG, "Failed to connect to Spotify media browser")
+                    }
+                },
+                null
+            )
+            mediaBrowser = browser
+            browser.connect()
+        }
+
         var attempts = 0
         val retryRunnable = object : Runnable {
             override fun run() {
@@ -42,6 +75,12 @@ object SpotifyController {
             }
         }
         handler.post(retryRunnable)
+    }
+
+    fun disconnectMediaBrowser() {
+        mediaBrowser?.disconnect()
+        mediaBrowser = null
+        mediaBrowserController = null
     }
 
     fun openSpotify(context: Context): Boolean {
@@ -154,10 +193,10 @@ object SpotifyController {
                     return controller
                 }
             }
-            null
+            mediaBrowserController
         } catch (e: Exception) {
             Log.e(TAG, "Error getting MediaController", e)
-            null
+            mediaBrowserController
         }
     }
 

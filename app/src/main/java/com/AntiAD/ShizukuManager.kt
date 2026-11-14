@@ -139,21 +139,6 @@ object ShizukuManager {
         }
     }
 
-    fun launchSpotifyAndGoHome(): Boolean {
-        val process = runCommand(
-            "am startservice -n com.spotify.music/.spotify.MusicService 2>/dev/null " +
-                "|| am startservice -n com.spotify.music/.MusicService 2>/dev/null"
-        ) ?: return false
-
-        return try {
-            process.waitFor() == 0
-        } catch (e: InterruptedException) {
-            Thread.currentThread().interrupt()
-            Log.e(TAG, "Interrupted while launching Spotify", e)
-            false
-        }
-    }
-
     fun sendToBackground() {
         runCommand("input keyevent KEYCODE_HOME")
     }
