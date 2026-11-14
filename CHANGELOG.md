@@ -5,7 +5,9 @@ All notable changes to [Anti-Ad](https://github.com/traitimtrongvag/Anti-Ad) are
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 
-## [Unreleased]
+## [0.1.1] - 2026-11-14
+
+This release focuses on reliable Spotify recovery after advertisements while keeping relaunches in the background.
 
 ### Fixed
 
