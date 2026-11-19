@@ -16,7 +16,7 @@ def releaseSigning = [
 def hasReleaseSigning = releaseSigning.values().every { it }
 
 android {
-    compileSdk 37
+    compileSdkPreview "CANARY"
 
     buildFeatures {
         buildConfig true
