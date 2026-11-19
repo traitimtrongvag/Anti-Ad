@@ -1,6 +1,5 @@
 plugins {
     id 'com.android.application'
-    id 'kotlin-android'
 }
 
 def localSigning = new Properties()
@@ -17,7 +16,11 @@ def releaseSigning = [
 def hasReleaseSigning = releaseSigning.values().every { it }
 
 android {
-    compileSdk 35
+    compileSdk 37
+
+    buildFeatures {
+        buildConfig true
+    }
 
     defaultConfig {
         applicationId "com.AntiAD"
@@ -61,10 +64,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = '17'
-    }
-
     namespace 'com.AntiAD'
 
     lint {
